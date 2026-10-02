@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Secretario S-21-S e Informes - Congregación Oeste Formosa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+        }
+        .s21-card {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 8.5px;
+            line-height: 1.1;
+            color: #000;
+            background: #fff;
+            padding: 6px 10px;
+            border: 1px solid #475569;
+            border-radius: 2px;
+            box-sizing: border-box;
+        }
+        .s21-card table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8px;
+            margin-top: 2px;
+            margin-bottom: 2px;
+        }
+        .s21-card th, .s21-card td {
+            border: 1px solid #334155;
+            padding: 1px 3px;
+            text-align: center;
+            height: 13.5px;
+        }
+        .s21-card th {
+            background-color: #f1f5f9;
+            font-weight: bold;
+        }
+        .s21-container-a4 {
+            width: 680px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: #ffffff;
+            padding: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800 p-2 md:p-8">
+
+    <!-- ================================================= -->
+    <!-- VISTA PÚBLICA: FORMULARIO DE INFORME PARA HERMANOS -->
+    <!-- ================================================= -->
+    <div id="vistaFormulario" class="max-w-md mx-auto bg-white min-h-screen shadow-lg rounded-lg overflow-hidden pb-10">
+        <div class="bg-[#2B5A83] text-white text-center py-6 shadow-md mb-6">
+            <h1 class="text-xl font-bold tracking-wide">INFORME DE PREDICACIÓN</h1>
+            <p class="text-sm mt-1 text-blue-200 font-medium">Congregación Oeste Formosa • S-4-S</p>
+        </div>
+
+        <form id="formPublicoEnvio" onsubmit="enviarInformePublico(event)" class="px-6 space-y-5">
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Grupo</label>
+                <select id="selectGrupoPub" onchange="actualizarNombresPub()" required class="w-full border border-slate-300 rounded-md p-3 bg-white font-medium text-slate-800 outline-none focus:ring-2 focus:ring-[#2B5A83]">
+                    <option value="">Seleccione el grupo...</option>
+                    <option value="GRUPO 1">GRUPO 1</option>
+                    <option value="GRUPO 2">GRUPO 2</option>
+                    <option value="GRUPO 3">GRUPO 3</option>
+                    <option value="GRUPO 4">GRUPO 4</option>
+                    <option value="GRUPO 5">GRUPO 5</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Nombre</label>
+                <select id="selectNombrePub" name="Nombre" required class="w-full border border-slate-300 rounded-md p-3 bg-white font-medium text-slate-800 outline-none focus:ring-2 focus:ring-[#2B5A83]">
+                    <option value="">Seleccione... (Elija un grupo primero)</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Mes</label>
+                    <select name="Mes" id="pubMes" class="w-full border border-slate-300 rounded-md p-3 bg-white outline-none focus:ring-2 focus:ring-[#2B5A83]">
+                        <option value="Septiembre" selected>Septiembre</option>
+                        <option value="Octubre">Octubre</option>
+                        <option value="Noviembre">Noviembre</option>
+                        <option value="Diciembre">Diciembre</option>
+                        <option value="Enero">Enero</option>
+                        <option value="Febrero">Febrero</option>
+                        <option value="Marzo">Marzo</option>
+                        <option value="Abril">Abril</option>
+                        <option value="Mayo">Mayo</option>
+                        <option value="Junio">Junio</option>
+                        <option value="Julio">Julio</option>
+                        <option value="Agosto">Agosto</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Año</label>
+                    <select name="Anio" id="pubAnio" class="w-full border border-slate-300 rounded-md p-3 bg-white outline-none focus:ring-2 focus:ring-[#2B5A83]">
+                        <option value="2026" selected>2026</option>
+                        <option value="2027">2027</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="border border-slate-300 bg-white rounded-md p-4 flex items-center gap-4 shadow-sm">
+                <input type="checkbox" name="Participo" id="participoPub" value="Sí" checked class="w-6 h-6 rounded border-slate-300 text-[#2B5A83] focus:ring-[#2B5A83]">
+                <label for="participoPub" class="text-sm font-bold text-slate-700 leading-tight cursor-pointer select-none">
+                    Marque la casilla si participó en alguna faceta de la predicación durante el mes
+                </label>
+            </div>
+
+            <div class="border border-slate-300 bg-white rounded-md p-4 shadow-sm">
+                <label class="block text-sm font-bold text-slate-700 mb-2">Número de diferentes cursos bíblicos dirigidos</label>
+                <input type="number" name="Cursos" id="pubCursos" min="0" value="0" class="w-full border border-slate-300 rounded-md p-3 outline-none focus:border-[#2B5A83]">
+            </div>
+
+            <div class="border border-slate-300 bg-white rounded-md p-4 shadow-sm">
+                <label class="block text-sm font-bold text-slate-700 mb-1">Horas <span class="font-normal text-slate-500 text-[12px]">(Solo auxiliares, regulares, especiales o misioneros)</span></label>
+                <input type="number" name="Horas" id="pubHoras" min="0" value="0" class="w-full border border-slate-300 rounded-md p-3 outline-none mt-1 focus:border-[#2B5A83]">
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Comentarios</label>
+                <input type="text" name="Notas" id="pubNotas" placeholder="Opcional" class="w-full border border-slate-300 rounded-md p-3 outline-none focus:border-[#2B5A83]">
+            </div>
+
+            <button type="submit" id="btnEnviarPub" class="w-full bg-[#2B5A83] hover:bg-[#1E4364] text-white font-bold py-4 rounded-md shadow-md mt-4 transition text-lg">
+                Enviar informe
+            </button>
+            <div id="mensajeExitoPub" class="hidden p-3 bg-emerald-50 border border-emerald-300 text-emerald-800 text-center font-bold rounded-md">
+                ¡Informe enviado con éxito! Muchas gracias.
+            </div>
+        </form>
+
+        <div class="mt-12 text-center border-t pt-6 px-6">
+            <button onclick="solicitarAccesoSecretaria()" class="text-xs text-slate-400 hover:text-blue-700 font-semibold underline transition">
+                🔐 Acceso exclusivo para el Secretario
+            </button>
+        </div>
+    </div>
+
+    <!-- ================================================= -->
+    <!-- VISTA PRIVADA: PROGRAMA COMPLETO DEL SECRETARIO   -->
+    <!-- ================================================= -->
+    <div id="vistaSecretaria" class="hidden max-w-7xl mx-auto space-y-6">
+        
+        <header class="bg-blue-900 text-white p-6 rounded-lg shadow-md flex justify-between items-center flex-wrap gap-4 no-print">
+            <div>
+                <h1 class="text-2xl font-bold">Programa de Gestión del Secretario</h1>
+                <p class="text-blue-200 text-sm">Congregación Oeste Formosa • Año de Servicio: <span id="labelAñoServicio" class="font-bold text-yellow-300"></span></p>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+                <button onclick="cerrarSesionSecretaria()" class="bg-slate-700 hover:bg-slate-800 text-white px-3 py-2 rounded shadow font-medium transition text-xs">
+                    🔒 Cerrar Sesión
+                </button>
+                <button onclick="exportarS21TodosPDF()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded shadow font-medium transition text-xs flex items-center gap-1">
+                    📄 Descargar Todas las S-21 (PDF A4)
+                </button>
+                <button onclick="exportarExcelGeneral()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded shadow font-medium transition text-xs flex items-center gap-1">
+                    📊 General Excel (Diseño Oficial)
+                </button>
+            </div>
+        </header>
+
+        <nav class="flex border-b border-slate-300 bg-white rounded-t-lg overflow-hidden shadow-sm flex-wrap text-xs md:text-sm no-print">
+            <button onclick="cambiarPestana('carga')" id="tabCarga" class="px-4 py-3 font-semibold border-b-2 border-blue-600 text-blue-600 bg-blue-50">Carga Informe</button>
+            <button onclick="cambiarPestana('s21')" id="tabS21" class="px-4 py-3 font-semibold text-slate-600 hover:text-blue-600 font-bold text-blue-900">📄 Ficha S-21-S</button>
+            <button onclick="cambiarPestana('asistencia')" id="tabAsistencia" class="px-4 py-3 font-semibold text-slate-600 hover:text-purple-600 font-bold text-purple-900">📋 Asistencia S-88-S</button>
+            <button onclick="cambiarPestana('estado')" id="tabEstado" class="px-4 py-3 font-semibold text-slate-600 hover:text-blue-600">Estado / Grupos</button>
+            <button onclick="cambiarPestana('pastoreo')" id="tabPastoreo" class="px-4 py-3 font-semibold text-slate-600 hover:text-red-600 font-bold text-red-700">⚠️ Pastoreo</button>
+            <button onclick="cambiarPestana('sucursal')" id="tabSucursal" class="px-4 py-3 font-semibold text-slate-600 hover:text-emerald-600 font-bold text-emerald-800">Sucursal y S-10</button>
+            <button onclick="cambiarPestana('emergencia')" id="tabEmergencia" class="px-4 py-3 font-semibold text-slate-600 hover:text-red-600">🚨 Emergencias</button>
+            <button onclick="cambiarPestana('precursores')" id="tabPrecursores" class="px-4 py-3 font-semibold text-slate-600 hover:text-blue-600">Precursores</button>
+            <button onclick="cambiarPestana('movimientos')" id="tabMovimientos" class="px-4 py-3 font-semibold text-slate-600 hover:text-amber-600">Movimientos</button>
+            <button onclick="cambiarPestana('publicadores')" id="tabPublicadores" class="px-4 py-3 font-semibold text-slate-600 hover:text-blue-600 font-bold">Nómina</button>
+            <button onclick="cambiarPestana('grupos')" id="tabGrupos" class="px-4 py-3 font-semibold text-slate-600 hover:text-blue-600 font-bold text-blue-800">🏛️ Grupos</button>
+            <button onclick="cambiarPestana('sistema')" id="tabSistema" class="px-4 py-3 font-semibold text-slate-600 hover:text-indigo-600 font-bold text-indigo-800 border-l border-slate-300">⚙️ Sistema & Backup</button>
+        </nav>
+
+        <!-- SECCIÓN 1: FICHA S-21-S -->
+        <div id="secS21" class="hidden bg-white p-6 rounded-lg shadow-md space-y-6">
+            <div class="flex justify-between items-center border-b pb-4 flex-wrap gap-3 no-print">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800">Ficha Oficial S-21-S (2 Tarjetas de 1 Año en Hoja A4)</h2>
+                    <p class="text-xs text-slate-500">Primera tarjeta: Año de Servicio actual. Segunda tarjeta: Año de Servicio anterior.</p>
+                </div>
+                <div class="flex gap-2 flex-wrap">
+                    <select id="selectS21Hermano" onchange="cargarFichaS21()" class="border p-2 rounded text-sm font-semibold text-blue-900 bg-slate-50">
+                        <option value="">-- Seleccionar Hermano --</option>
+                    </select>
+                    <button onclick="exportarS21IndividualPDF()" class="bg-blue-800 hover:bg-blue-900 text-white px-3 py-2 rounded text-xs font-bold shadow">
+                        📄 Descargar S-21 (A4)
+                    </button>
+                    <button onclick="exportarS21TodosPDF()" class="bg-indigo-700 hover:bg-indigo-800 text-white px-3 py-2 rounded text-xs font-bold shadow">
+                        📚 Descargar TODAS (PDF A4)
+                    </button>
+                </div>
+            </div>
+
+            <div id="contenedorS21" class="s21-container-a4">
+                <!-- TARJETA 1 -->
+                <div class="s21-card shadow-sm">
+                    <div class="text-center font-bold text-[11px] border-b border-black pb-0.5 mb-1 uppercase tracking-wide">REGISTRO DE PUBLICADOR DE LA CONGREGACIÓN</div>
+                    <div class="grid grid-cols-2 gap-y-0.5 gap-x-2 text-[9px] border-b border-slate-300 pb-1 mb-1">
+                        <div><span class="font-bold">Nombre:</span> <span id="s21Nombre" class="font-semibold text-blue-950">-</span></div>
+                        <div class="flex gap-3"><span><span id="chkHombre">☐</span> Hombre</span><span><span id="chkMujer">☐</span> Mujer</span></div>
+                        <div><span class="font-bold">Fecha de nacimiento:</span> <span id="s21Nacimiento">-</span></div>
+                        <div class="flex gap-3"><span><span id="chkOtrasOvejas">☐</span> Otras ovejas</span><span><span id="chkUngido">☐</span> Ungido</span></div>
+                        <div><span class="font-bold">Fecha de bautismo:</span> <span id="s21Bautismo">-</span></div>
+                        <div class="col-span-2 pt-0.5 border-t border-slate-200 mt-0.5 grid grid-cols-3 gap-y-0.5 text-[8.5px]">
+                            <span><span id="chkAnciano">☐</span> Anciano</span><span><span id="chkSiervo">☐</span> Siervo ministerial</span><span><span id="chkPrecRegular">☐</span> Precursor regular</span>
+                            <span><span id="chkPrecEspecial">☐</span> Precursor especial</span><span class="col-span-2"><span id="chkMisionero">☐</span> Misionero que sirve en el campo</span>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr class="text-[8px]">
+                                <th class="text-left w-24">Año de servicio: <span id="s21AnioActual" class="font-extrabold text-blue-900">-</span></th>
+                                <th class="w-20">Participación en el ministerio</th><th class="w-16">Cursos bíblicos</th><th class="w-20">Precursor auxiliar</th>
+                                <th class="w-24">Horas <br><span class="text-[7.5px] font-normal">(Si es precursor o misionero)</span></th><th>Notas</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bodyS21TablaActual"></tbody>
+                        <tfoot>
+                            <tr class="font-bold bg-slate-50"><td class="text-right uppercase" colspan="4">Total</td><td id="s21TotHorasActual" class="font-black text-xs"></td><td></td></tr>
+                        </tfoot>
+                    </table>
+                    <div class="text-right text-[7.5px] text-slate-500 font-mono">S-21-5 11/23</div>
+                </div>
+                <!-- TARJETA 2 -->
+                <div class="s21-card shadow-sm">
+                    <div class="text-center font-bold text-[11px] border-b border-black pb-0.5 mb-1 uppercase tracking-wide">REGISTRO DE PUBLICADOR DE LA CONGREGACIÓN</div>
+                    <div class="grid grid-cols-2 gap-y-0.5 gap-x-2 text-[9px] border-b border-slate-300 pb-1 mb-1">
+                        <div><span class="font-bold">Nombre:</span> <span id="s21NombreAnt" class="font-semibold text-blue-950">-</span></div>
+                        <div class="flex gap-3"><span><span id="chkHombreAnt">☐</span> Hombre</span><span><span id="chkMujerAnt">☐</span> Mujer</span></div>
+                        <div><span class="font-bold">Fecha de nacimiento:</span> <span id="s21NacimientoAnt">-</span></div>
+                        <div class="flex gap-3"><span><span id="chkOtrasOvejasAnt">☐</span> Otras ovejas</span><span><span id="chkUngidoAnt">☐</span> Ungido</span></div>
+                        <div><span class="font-bold">Fecha de bautismo:</span> <span id="s21BautismoAnt">-</span></div>
+                        <div class="col-span-2 pt-0.5 border-t border-slate-200 mt-0.5 grid grid-cols-3 gap-y-0.5 text-[8.5px]">
+                            <span><span id="chkAncianoAnt">☐</span> Anciano</span><span><span id="chkSiervoAnt">☐</span> Siervo ministerial</span><span><span id="chkPrecRegularAnt">☐</span> Precursor regular</span>
+                            <span><span id="chkPrecEspecialAnt">☐</span> Precursor especial</span><span class="col-span-2"><span id="chkMisioneroAnt">☐</span> Misionero que sirve en el campo</span>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr class="text-[8px]">
+                                <th class="text-left w-24">Año de servicio: <span id="s21AnioAnterior" class="font-extrabold text-blue-900">-</span></th>
+                                <th class="w-20">Participación en el ministerio</th><th class="w-16">Cursos bíblicos</th><th class="w-20">Precursor auxiliar</th>
+                                <th class="w-24">Horas <br><span class="text-[7.5px] font-normal">(Si es precursor o misionero)</span></th><th>Notas</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bodyS21TablaAnterior"></tbody>
+                        <tfoot>
+                            <tr class="font-bold bg-slate-50"><td class="text-right uppercase" colspan="4">Total</td><td id="s21TotHorasAnterior" class="font-black text-xs"></td><td></td></tr>
+                        </tfoot>
+                    </table>
+                    <div class="text-right text-[7.5px] text-slate-500 font-mono">S-21-5 11/23</div>
+                </div>
+            </div>
+            <div id="contenedorTodasS21" class="hidden"></div>
+        </div>
+
+        <!-- SECCIÓN 2: CARGA DE INFORME MENSUAL -->
+        <div id="secCarga" class="grid md:grid-cols-3 gap-6">
+            <div class="md:col-span-3 space-y-4 mb-2">
+                <div class="bg-blue-50 border border-blue-200 p-6 rounded-lg shadow-sm">
+                    <h2 class="text-lg font-bold text-blue-900 mb-4 border-b border-blue-200 pb-2">☁️ Importación Masiva de Informes de Predicación</h2>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-white p-5 rounded border flex flex-col items-center justify-center text-center shadow-sm">
+                            <h3 class="font-bold text-sm text-slate-800 mb-1">Opción 1: Archivo Local (.csv)</h3>
+                            <p class="text-xs text-slate-500 mb-4">Sube el archivo de Google Sheets descargado.</p>
+                            <label for="fileUploadForm" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded text-sm cursor-pointer shadow transition w-full">📁 Cargar CSV (Informes)</label>
+                            <input type="file" id="fileUploadForm" accept=".csv" class="hidden" onchange="importarArchivoLocal(event)">
+                        </div>
+                        <div class="bg-white p-5 rounded border flex flex-col items-center justify-center text-center shadow-sm">
+                            <h3 class="font-bold text-sm text-slate-800 mb-1">Opción 2: Sincronizar desde Web</h3>
+                            <p class="text-xs text-slate-500 mb-2">Pega el enlace público de tu hoja (.csv).</p>
+                            <input type="text" id="urlGoogleSheets" placeholder="https://docs.google.com/.../pub?output=csv" class="w-full border p-2 rounded text-xs mb-3">
+                            <button onclick="sincronizarWebForms()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded text-sm shadow transition w-full">🔄 Sincronizar desde Google Sheets</button>
+                        </div>
+                    </div>
+                    <div id="importStatus" class="mt-4 text-sm font-semibold hidden rounded p-3 text-center border"></div>
+                </div>
+
+                <div class="bg-green-50 border border-green-200 p-6 rounded-lg shadow-sm flex flex-col md:flex-row gap-6 items-center">
+                    <div class="md:w-1/3">
+                        <h2 class="text-lg font-bold text-green-900 mb-1">📲 Solicitar Informes</h2>
+                        <p class="text-xs text-green-700">Genera un mensaje de WhatsApp para enviar el link de este mismo sistema a cada grupo.</p>
+                    </div>
+                    <div class="md:w-2/3 w-full grid grid-cols-1 md:grid-cols-2 gap-3 items-end">
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-semibold text-green-800 mb-1">Enlace Público de tu Sistema</label>
+                            <input type="text" id="waFormLink" placeholder="Ej. https://tu-sitio.tiiny.site" class="w-full border border-green-300 p-2 rounded text-sm focus:ring-2 focus:ring-green-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-green-800 mb-1">Seleccionar Grupo</label>
+                            <select id="waGrupoSelect" class="w-full border border-green-300 p-2 rounded text-sm bg-white focus:ring-2 focus:ring-green-500 outline-none"></select>
+                        </div>
+                        <div>
+                            <button onclick="enviarWhatsAppGrupo()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-sm shadow transition w-full flex items-center justify-center gap-2">
+                                <span>💬 Crear msj. de WhatsApp</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section class="bg-white p-6 rounded-lg shadow-md md:col-span-1">
+                <h2 class="text-lg font-bold text-slate-700 border-b pb-2 mb-4">Carga y Ajuste Manual</h2>
+                <form id="informeForm" onsubmit="guardarInforme(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Mes y Año del Informe</label>
+                        <input type="month" id="mesInforme" required onchange="cambioMesInforme()" class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-slate-50 font-bold text-blue-900">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Hermano/a</label>
+                        <select id="selectHermano" required onchange="verificarBloqueoHermano()" class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"></select>
+                    </div>
+                    <div id="alertaCargado" class="hidden p-3 bg-amber-50 border-l-4 border-amber-500 text-amber-900 text-xs font-semibold rounded space-y-1">
+                        <p class="font-bold text-amber-700">✏️ Modo Edición Activo</p>
+                    </div>
+                    <div id="camposInforme" class="space-y-4">
+                        <div class="flex items-center gap-2 pt-2">
+                            <input type="checkbox" id="participo" checked class="w-4 h-4 text-blue-600 rounded">
+                            <label for="participo" class="text-sm font-medium text-slate-700">¿Participó en el ministerio?</label>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Cursos Bíblicos</label>
+                            <input type="number" id="estudios" min="0" value="0" class="w-full border rounded p-2 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Precursor Auxiliar en este mes</label>
+                            <select id="precAuxMes" class="w-full border rounded p-2 text-sm">
+                                <option value="No">No</option><option value="Sí">Sí</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Horas</label>
+                            <input type="number" id="horas" min="0" value="0" class="w-full border rounded p-2 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Notas / Observaciones</label>
+                            <input type="text" id="notas" class="w-full border rounded p-2 text-sm">
+                        </div>
+                        <div class="space-y-2 pt-2">
+                            <button type="submit" id="btnGuardar" class="w-full bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 rounded shadow transition text-sm">Registrar en Ficha S-21-S</button>
+                            <button type="button" id="btnEliminarInforme" onclick="eliminarInformeSeleccionado()" class="hidden w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded shadow transition text-sm">🗑️ Eliminar</button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <section class="md:col-span-2 space-y-6">
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-blue-600 text-center"><span class="block text-xs font-semibold text-slate-500 uppercase">Informaron</span><span id="totInformaronMes" class="text-3xl font-bold text-slate-800">0</span></div>
+                    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-emerald-600 text-center"><span class="block text-xs font-semibold text-slate-500 uppercase">Cursos Bíblicos</span><span id="totEstudiosMes" class="text-3xl font-bold text-slate-800">0</span></div>
+                    <div class="bg-white p-4 rounded-lg shadow border-l-4 border-amber-500 text-center"><span class="block text-xs font-semibold text-slate-500 uppercase">Total Horas</span><span id="totHorasMes" class="text-3xl font-bold text-slate-800">0</span></div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="p-4 border-b flex justify-between items-center"><h3 class="font-bold text-slate-700">Últimos Informes</h3></div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 border-b text-slate-600 uppercase text-xs">
+                                <tr><th class="p-3">Hermano/a</th><th class="p-3">Grupo</th><th class="p-3 text-center">Participó</th><th class="p-3 text-center">Estudios</th><th class="p-3 text-center">Prec. Aux.</th><th class="p-3 text-center">Horas</th><th class="p-3 text-center">Acciones</th></tr>
+                            </thead>
+                            <tbody id="tablaUltimosInformes" class="divide-y"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- SECCIÓN 3: ASISTENCIA S-88-S (POR FECHA Y ASISTENCIA TOTAL) -->
+        <div id="secAsistencia" class="hidden bg-white p-6 rounded-lg shadow-md space-y-6">
+            <div class="border-b pb-4 flex justify-between items-center flex-wrap gap-2 no-print">
+                <div>
+                    <h2 class="text-xl font-bold text-purple-900">Formulario S-88-S: Asistencia a Reuniones por Fecha</h2>
+                    <p class="text-xs text-slate-500">Cargue la reunión indicando la fecha exacta (Ej. 03/10/2026) y la asistencia total.</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="exportarS88PDF()" class="bg-purple-800 hover:bg-purple-900 text-white px-4 py-2 rounded text-xs font-bold shadow">📄 Descargar S-88-S Oficial (PDF)</button>
+                    <button onclick="exportarExcelS88()" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded text-xs font-bold shadow">📋 Excel S-88-S</button>
+                </div>
+            </div>
+
+            <form onsubmit="guardarAsistenciaS88(event)" class="bg-purple-50 p-4 rounded border border-purple-200 grid md:grid-cols-5 gap-4 items-end no-print">
+                <div>
+                    <label class="block text-xs font-semibold text-purple-900 mb-1">Tipo de Reunión</label>
+                    <select id="s88Tipo" class="w-full border p-2 rounded text-sm bg-white">
+                        <option value="EntreSemana">Reunión de entre semana</option>
+                        <option value="FinSemana">Reunión del fin de semana</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-purple-900 mb-1">Fecha Exacta</label>
+                    <input type="date" id="s88Fecha" required class="w-full border p-2 rounded text-sm bg-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-purple-900 mb-1">Mes y Año (para S-88)</label>
+                    <select id="s88Mes" class="w-full border p-2 rounded text-sm bg-white">
+                        <option value="Septiembre">Septiembre</option><option value="Octubre" selected>Octubre</option><option value="Noviembre">Noviembre</option><option value="Diciembre">Diciembre</option><option value="Enero">Enero</option><option value="Febrero">Febrero</option><option value="Marzo">Marzo</option><option value="Abril">Abril</option><option value="Mayo">Mayo</option><option value="Junio">Junio</option><option value="Julio">Julio</option><option value="Agosto">Agosto</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-purple-900 mb-1">Asistencia Total</label>
+                    <input type="number" id="s88AsistenciaTotal" min="0" required placeholder="Ej. 100" class="w-full border p-2 rounded text-sm bg-white">
+                </div>
+                <button type="submit" class="bg-purple-800 hover:bg-purple-900 text-white font-bold p-2 rounded text-sm shadow">Registrar Asistencia</button>
+            </form>
+
+            <div class="overflow-x-auto">
+                <h3 class="font-bold text-sm text-purple-900 mb-2">Historial de Reuniones Registradas por Fecha</h3>
+                <table class="w-full text-left text-sm border"><thead class="bg-purple-900 text-white uppercase text-xs"><tr><th class="p-2 border">Fecha</th><th class="p-2 border">Tipo</th><th class="p-2 border">Mes S-88</th><th class="p-2 border text-center">Asistentes</th><th class="p-2 border text-center">Acciones</th></tr></thead><tbody id="tablaHistorialFechasS88" class="divide-y"></tbody></table>
+            </div>
+
+            <div id="contenedorS88PDF" class="form-box bg-white p-6 border rounded-lg space-y-6">
+                <div class="text-center border-b pb-3"><h3 class="text-base font-black text-slate-900 tracking-wider uppercase">REGISTRO DE ASISTENCIA A LAS REUNIONES DE LA CONGREGACIÓN</h3><p class="text-xs text-slate-600">Congregación Oeste Formosa</p></div>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="border rounded border-slate-400 overflow-hidden">
+                        <div class="bg-slate-200 text-slate-900 p-2 font-bold text-xs uppercase text-center border-b border-slate-400">Reunión de entre semana</div>
+                        <table class="w-full text-left text-xs"><thead class="bg-slate-100 uppercase"><tr><th class="p-2 border border-slate-300">Mes</th><th class="p-2 border border-slate-300 text-center">N° Reuniones</th><th class="p-2 border border-slate-300 text-center">Asistencia Total</th><th class="p-2 border border-slate-300 text-center">Promedio Semanal</th></tr></thead><tbody id="tablaS88EntreSemana" class="divide-y"></tbody><tfoot class="bg-slate-50 font-bold border-t border-slate-400 text-xs"><tr><td class="p-2 border border-slate-300">PROMEDIO MENSUAL</td><td id="promNumEntre" class="p-2 border border-slate-300 text-center">-</td><td id="totAsisEntre" class="p-2 border border-slate-300 text-center">-</td><td id="promSemEntre" class="p-2 border border-slate-300 text-center text-blue-900 font-bold">-</td></tr></tfoot></table>
+                    </div>
+                    <div class="border rounded border-slate-400 overflow-hidden">
+                        <div class="bg-slate-200 text-slate-900 p-2 font-bold text-xs uppercase text-center border-b border-slate-400">Reunión del fin de semana</div>
+                        <table class="w-full text-left text-xs"><thead class="bg-slate-100 uppercase"><tr><th class="p-2 border border-slate-300">Mes</th><th class="p-2 border border-slate-300 text-center">N° Reuniones</th><th class="p-2 border border-slate-300 text-center">Asistencia Total</th><th class="p-2 border border-slate-300 text-center">Promedio Semanal</th></tr></thead><tbody id="tablaS88FinSemana" class="divide-y"></tbody><tfoot class="bg-slate-50 font-bold border-t border-slate-400 text-xs"><tr><td class="p-2 border border-slate-300">PROMEDIO MENSUAL</td><td id="promNumFin" class="p-2 border border-slate-300 text-center">-</td><td id="totAsisFin" class="p-2 border border-slate-300 text-center">-</td><td id="promSemFin" class="p-2 border border-slate-300 text-center text-purple-900 font-bold">-</td></tr></tfoot></table>
+                    </div>
+                </div>
+                <div class="text-right text-[10px] text-slate-500 font-mono">S-88-S 11/23</div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 4: ESTADO / GRUPOS -->
+        <div id="secEstado" class="hidden space-y-6">
+            <div class="bg-white p-4 rounded-lg shadow-md flex justify-between items-center flex-wrap gap-4 border-l-4 border-emerald-600">
+                <div><h3 class="font-bold text-slate-800">Descargar Planilla por Grupo para Superintendentes</h3><p class="text-xs text-slate-500">Exportar el reporte de actividad exclusivo para control local del grupo.</p></div>
+                <div class="flex gap-2 items-center"><select id="selectGrupoDescarga" onchange="actualizarInfoSuperGrupo()" class="border p-2 rounded text-sm font-semibold"></select><button onclick="exportarExcelPorGrupo()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded text-xs font-bold shadow">📥 Descargar Excel del Grupo</button></div>
+            </div>
+            <div id="panelEncargadosGrupo" class="bg-blue-50 border border-blue-200 p-4 rounded-lg flex justify-between items-center text-xs text-blue-900">
+                <div><span class="font-bold uppercase tracking-wider block text-[10px] text-blue-600">Superintendente de Grupo Designado</span><span id="labelSuperintendente" class="text-base font-extrabold text-blue-950">Sin asignar</span></div>
+                <div><span class="font-bold uppercase tracking-wider block text-[10px] text-blue-600">Auxiliar de Grupo Designado</span><span id="labelAuxiliar" class="text-base font-extrabold text-blue-950">Sin asignar</span></div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-emerald-500"><h3 class="font-bold text-emerald-800 text-lg mb-3 flex justify-between"><span>✅ Informaron</span><span id="cantInformaron" class="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-xs">0</span></h3><ul id="listaInformaron" class="divide-y text-sm max-h-96 overflow-y-auto"></ul></div>
+                <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-red-500"><h3 class="font-bold text-red-800 text-lg mb-3 flex justify-between"><span>❌ Pendientes (No Informaron)</span><span id="cantPendientes" class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs">0</span></h3><ul id="listaPendientes" class="divide-y text-sm max-h-96 overflow-y-auto"></ul></div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 5: PASTOREO -->
+        <div id="secPastoreo" class="hidden bg-white p-6 rounded-lg shadow-md space-y-6">
+            <div class="border-b pb-4 flex justify-between items-center flex-wrap gap-2">
+                <div><h2 class="text-xl font-bold text-red-800">Reporte de Pastoreo: Irregulares e Inactivos</h2><p class="text-xs text-slate-500">Clasificación automática analizando los últimos meses de informes.</p></div>
+                <button onclick="exportarReportePastoreo()" class="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded text-xs font-bold shadow">📋 Exportar Reporte de Pastoreo</button>
+            </div>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="border rounded-lg overflow-hidden border-amber-300 shadow-sm"><div class="bg-amber-500 text-white p-3 font-bold text-sm flex justify-between"><span>⚠️ PUBLICADORES IRREGULARES (3 meses sin informar)</span><span id="cntIrregulares" class="bg-white text-amber-800 px-2 py-0.5 rounded text-xs font-extrabold">0</span></div><div class="p-3 bg-slate-50"><ul id="listaIrregulares" class="divide-y text-sm max-h-96 overflow-y-auto"></ul></div></div>
+                <div class="border rounded-lg overflow-hidden border-red-400 shadow-sm"><div class="bg-red-700 text-white p-3 font-bold text-sm flex justify-between"><span>🚨 PUBLICADORES INACTIVOS (Más de 3 meses sin informar)</span><span id="cntInactivos" class="bg-white text-red-800 px-2 py-0.5 rounded text-xs font-extrabold">0</span></div><div class="p-3 bg-slate-50"><ul id="listaInactivos" class="divide-y text-sm max-h-96 overflow-y-auto"></ul></div></div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 6: SUCURSAL Y S-10 -->
+        <div id="secSucursal" class="hidden bg-white p-6 rounded-lg shadow-md space-y-8">
+            <div>
+                <div class="border-b pb-4 flex justify-between items-center flex-wrap gap-2 mb-4">
+                    <div><h2 class="text-xl font-bold text-slate-800">Informe Mensual Consolidado para la Sucursal</h2><p class="text-xs text-slate-500">Contabilidad exacta mes por mes con separación de publicadores y auxiliares.</p></div>
+                    <button onclick="exportarExcelSucursal()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded text-xs font-bold shadow">📊 Exportar Informe Sucursal</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border border-slate-300"><thead class="bg-emerald-900 text-white uppercase text-[11px]"><tr><th class="p-2 border border-slate-400">Mes</th><th class="p-2 border border-slate-400 text-center">Cant. Publicadores</th><th class="p-2 border border-slate-400 text-center">Cant. Prec. Auxiliares</th><th class="p-2 border border-slate-400 text-center">Cant. Prec. Regulares</th><th class="p-2 border border-slate-400 text-center bg-emerald-800">Estudios Publicadores</th><th class="p-2 border border-slate-400 text-center bg-emerald-800">Estudios Auxiliares</th><th class="p-2 border border-slate-400 text-center bg-emerald-800">Estudios Regulares</th><th class="p-2 border border-slate-400 text-center bg-blue-900">Horas Auxiliares</th><th class="p-2 border border-slate-400 text-center bg-blue-900">Horas Regulares</th><th class="p-2 border border-slate-400 text-center bg-slate-900 font-bold">Total Horas</th><th class="p-2 border border-slate-400 text-center bg-slate-900 font-bold">Total Cursos</th></tr></thead><tbody id="tablaSucursalEstadisticas" class="divide-y font-medium text-slate-700"></tbody></table>
+                </div>
+            </div>
+
+            <div class="border-t pt-6 bg-slate-50 p-6 rounded-lg border border-slate-200">
+                <div class="flex justify-between items-center border-b pb-4 mb-6 flex-wrap gap-4">
+                    <div><h2 class="text-xl font-bold text-blue-900">Análisis de la Congregación (S-10)</h2><p class="text-xs text-slate-600">Formulario anual. Los totales se estiman basándose en los registros del año de servicio.</p></div>
+                    <div class="flex items-center gap-3"><label class="text-sm font-bold text-slate-700">Año de servicio:</label><select id="s10SelectAnio" onchange="cargarDatosS10()" class="border p-2 rounded bg-white text-sm font-bold text-blue-900 shadow-sm"></select><button onclick="autocalcularS10()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-xs font-bold shadow flex items-center gap-1">🔄 Autocalcular</button></div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <h3 class="font-bold text-slate-800 bg-slate-200 p-2 rounded text-sm uppercase">1. Asistencia y publicadores</h3>
+                        <div class="space-y-3 bg-white p-4 border rounded shadow-sm">
+                            <h4 class="font-bold text-xs text-slate-500 uppercase border-b pb-1">Promedio de asistencia a las reuniones</h4>
+                            <div class="flex justify-between items-center"><label class="text-sm font-medium text-slate-700">Reunión del fin de semana</label><input type="number" id="s10AsistenciaFin" class="border p-1.5 rounded w-24 text-center font-bold text-blue-900 bg-slate-50" readonly></div>
+                            <div class="flex justify-between items-center"><label class="text-sm font-medium text-slate-700">Reunión de entre semana</label><input type="number" id="s10AsistenciaEntre" class="border p-1.5 rounded w-24 text-center font-bold text-blue-900 bg-slate-50" readonly></div>
+                        </div>
+                        <div class="space-y-3 bg-white p-4 border rounded shadow-sm">
+                            <h4 class="font-bold text-xs text-slate-500 uppercase border-b pb-1">Totales de la congregación</h4>
+                            <div class="flex justify-between items-center"><label class="text-sm font-medium text-slate-700 w-2/3">Todos los publicadores activos</label><input type="number" id="s10Activos" class="border p-1.5 rounded w-20 text-center font-bold"></div>
+                            <div class="flex justify-between items-center border-t pt-2"><label class="text-sm font-medium text-slate-700 w-2/3">Nuevos publicadores inactivos</label><input type="number" id="s10InactivosNuevos" class="border p-1.5 rounded w-20 text-center font-bold text-red-700"></div>
+                            <div class="flex justify-between items-center border-t pt-2"><label class="text-sm font-medium text-slate-700 w-2/3">Publicadores reactivados</label><input type="number" id="s10Reactivados" class="border p-1.5 rounded w-20 text-center font-bold text-emerald-700"></div>
+                            <div class="flex justify-between items-center border-t pt-2"><label class="text-sm font-medium text-slate-700">Publicadores sordos</label><input type="number" id="s10Sordos" value="0" min="0" class="border p-1.5 rounded w-20 text-center font-bold bg-amber-50"></div>
+                            <div class="flex justify-between items-center border-t pt-2"><label class="text-sm font-medium text-slate-700">Publicadores ciegos</label><input type="number" id="s10Ciegos" value="0" min="0" class="border p-1.5 rounded w-20 text-center font-bold bg-amber-50"></div>
+                            <div class="flex justify-between items-center border-t pt-2"><label class="text-sm font-medium text-slate-700 w-2/3">Publicadores encarcelados</label><input type="number" id="s10Encarcelados" value="0" min="0" class="border p-1.5 rounded w-20 text-center font-bold bg-amber-50"></div>
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <h3 class="font-bold text-slate-800 bg-slate-200 p-2 rounded text-sm uppercase">2. Territorios abarcados</h3>
+                        <div class="space-y-4 bg-white p-4 border rounded shadow-sm">
+                            <div class="flex justify-between items-center"><label class="text-sm font-medium text-slate-700">Número total de territorios</label><input type="number" id="s10TerritoriosTotal" value="0" min="0" class="border p-1.5 rounded w-24 text-center font-bold bg-amber-50"></div>
+                            <div class="flex justify-between items-center border-t pt-4"><label class="text-sm font-medium text-slate-700 w-2/3">Territorios no predicados</label><input type="number" id="s10TerritoriosNoPred" value="0" min="0" class="border p-1.5 rounded w-24 text-center font-bold bg-amber-50"></div>
+                        </div>
+                        <div class="mt-6"><button onclick="guardarS10Manual()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded shadow-md transition">💾 Guardar Análisis S-10</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 7: EMERGENCIA -->
+        <div id="secEmergencia" class="hidden bg-white p-6 rounded-lg shadow-md space-y-6">
+            <div class="border-b pb-4 flex justify-between items-center flex-wrap gap-2">
+                <div><h2 class="text-xl font-bold text-red-800">Plan de Emergencias y Lista de Localización</h2></div>
+                <button onclick="exportarContactosEmergencia()" class="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded text-xs font-bold shadow">📥 Descargar Lista de Emergencia</button>
+            </div>
+            <form onsubmit="guardarContactoEmergencia(event)" class="bg-red-50 p-4 rounded border border-red-200 space-y-4">
+                <div class="grid md:grid-cols-3 gap-4 text-xs">
+                    <div><label class="block font-semibold text-slate-700 mb-1">Hermano/a</label><select id="emgHermanoId" required onchange="cargarDatosEmergenciaHermano()" class="w-full border p-2 rounded bg-white"></select></div>
+                    <div><label class="block font-semibold text-slate-700 mb-1">Celular / Teléfono Móvil</label><input type="text" id="emgCelular" class="w-full border p-2 rounded bg-white"></div>
+                    <div><label class="block font-semibold text-slate-700 mb-1">Correo Electrónico</label><input type="email" id="emgEmail" class="w-full border p-2 rounded bg-white"></div>
+                    <div class="md:col-span-3"><label class="block font-semibold text-slate-700 mb-1">Dirección Domicilio Principal</label><input type="text" id="emgDireccionPrincipal" class="w-full border p-2 rounded bg-white"></div>
+                </div>
+                <h4 class="font-bold text-xs text-red-900 uppercase pt-2 border-t border-red-200">Ubicación en Caso de Evacuación / Desastre</h4>
+                <div class="grid md:grid-cols-3 gap-4 text-xs">
+                    <div><label class="block font-semibold text-slate-700 mb-1">Lugar de Evacuación</label><input type="text" id="emgLugarEvacuacion" class="w-full border p-2 rounded bg-white"></div>
+                    <div><label class="block font-semibold text-slate-700 mb-1">Dirección Refugio</label><input type="text" id="emgDireccionEvacuacion" class="w-full border p-2 rounded bg-white"></div>
+                    <div><label class="block font-semibold text-slate-700 mb-1">Contacto Refugio</label><input type="text" id="emgContactoRefugio" class="w-full border p-2 rounded bg-white"></div>
+                </div>
+                <button type="submit" class="bg-red-800 hover:bg-red-900 text-white font-bold py-2 px-6 rounded text-sm shadow">Guardar Datos de Emergencia</button>
+            </form>
+            <div class="overflow-x-auto"><table class="w-full text-left text-sm border"><thead class="bg-red-900 text-white uppercase text-xs"><tr><th class="p-3 border">Hermano/a</th><th class="p-3 border">Grupo</th><th class="p-3 border">Celular</th><th class="p-3 border">Domicilio</th><th class="p-3 border">Lugar Evacuación</th><th class="p-3 border">Dirección Refugio</th><th class="p-3 border">Contacto Refugio</th></tr></thead><tbody id="tablaContactosEmergencia" class="divide-y"></tbody></table></div>
+        </div>
+
+        <!-- SECCIÓN 8: PRECURSORES -->
+        <div id="secPrecursores" class="hidden bg-white p-6 rounded-lg shadow-md space-y-4">
+            <h2 class="text-xl font-bold text-slate-800 border-b pb-2">Seguimiento Anual de Precursores Regulares (600 Horas)</h2>
+            <div class="overflow-x-auto"><table class="w-full text-left text-sm"><thead class="bg-slate-100 uppercase text-xs text-slate-600"><tr><th class="p-3">Nombre</th><th class="p-3">Grupo</th><th class="p-3 text-center">Horas Acumuladas</th><th class="p-3 text-center">Meta Anual</th><th class="p-3 text-center">% Cumplido</th><th class="p-3 text-center">Promedio Mensual</th><th class="p-3 text-center">Total Cursos Bíblicos</th></tr></thead><tbody id="tablaPrecursoresRegulares" class="divide-y"></tbody></table></div>
+        </div>
+
+        <!-- SECCIÓN 9: MOVIMIENTOS -->
+        <div id="secMovimientos" class="hidden bg-white p-6 rounded-lg shadow-md space-y-6">
+            <div class="border-b pb-4"><h2 class="text-xl font-bold text-amber-800">Registro de Movimientos de la Congregación</h2></div>
+            <form onsubmit="registrarMovimiento(event)" class="bg-amber-50 p-4 rounded border border-amber-200 grid md:grid-cols-4 gap-4 items-end">
+                <div><label class="block text-xs font-semibold text-amber-900 mb-1">Hermano/a</label><select id="movHermano" required class="w-full border p-2 rounded text-sm bg-white"></select></div>
+                <div><label class="block text-xs font-semibold text-amber-900 mb-1">Tipo de Movimiento</label><select id="movTipo" required class="w-full border p-2 rounded text-sm bg-white font-semibold"><option value="Sacado/Expulsado">Sacado / Expulsado</option><option value="Readmitido">Readmitido</option><option value="Mudado/Trasladado">Mudado / Trasladado</option></select></div>
+                <div><label class="block text-xs font-semibold text-amber-900 mb-1">Fecha del Anuncio / Cambio</label><input type="date" id="movFecha" required class="w-full border p-2 rounded text-sm bg-white"></div>
+                <button type="submit" class="bg-amber-700 hover:bg-amber-800 text-white font-bold p-2 rounded text-sm shadow">Registrar Movimiento</button>
+            </form>
+            <div class="overflow-x-auto"><table class="w-full text-left text-sm border"><thead class="bg-slate-100 uppercase text-xs text-slate-600"><tr><th class="p-3 border">Hermano/a</th><th class="p-3 border">Tipo de Movimiento</th><th class="p-3 border">Fecha</th><th class="p-3 border text-center">Acciones</th></tr></thead><tbody id="tablaMovimientosHistorial" class="divide-y"></tbody></table></div>
+        </div>
+
+        <!-- SECCIÓN 10: NÓMINA PUBLICADORES (CON FILTRO POR GRUPO) -->
+        <div id="secPublicadores" class="hidden bg-white p-6 rounded-lg shadow-md space-y-4">
+            <div class="border-b pb-2 flex justify-between items-center flex-wrap gap-4">
+                <h2 class="text-xl font-bold text-slate-800">Nómina de Publicadores de la Congregación</h2>
+                <div class="flex items-center gap-2">
+                    <label class="text-xs font-bold text-slate-700">Filtrar por Grupo:</label>
+                    <select id="filtroGrupoNomina" onchange="cargarNomina()" class="border p-2 rounded text-xs font-semibold bg-slate-50">
+                        <option value="TODOS">Todos los grupos</option>
+                        <option value="GRUPO 1">GRUPO 1</option>
+                        <option value="GRUPO 2">GRUPO 2</option>
+                        <option value="GRUPO 3">GRUPO 3</option>
+                        <option value="GRUPO 4">GRUPO 4</option>
+                        <option value="GRUPO 5">GRUPO 5</option>
+                    </select>
+                </div>
+            </div>
+            <div class="bg-emerald-50 border border-emerald-200 p-4 rounded mb-4 flex justify-between items-center flex-wrap gap-4 shadow-sm">
+                <div>
+                    <h3 class="font-bold text-sm text-emerald-900">☁️ Importar Nómina Completa desde Excel</h3>
+                    <p class="text-xs text-emerald-700">Puedes cargar todos los publicadores de una vez usando un archivo Excel.</p>
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" onclick="descargarPlantillaNomina()" class="bg-white border border-emerald-600 text-emerald-700 hover:bg-emerald-100 font-bold py-2 px-4 rounded text-xs shadow-sm transition">📥 Descargar Plantilla</button>
+                    <label for="fileUploadNomina" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded text-xs cursor-pointer shadow transition">📁 Cargar Excel</label>
+                    <input type="file" id="fileUploadNomina" accept=".xlsx, .xls, .csv" class="hidden" onchange="importarNominaExcel(event)">
+                </div>
+            </div>
+            
+            <form onsubmit="agregarHermano(event)" class="bg-slate-50 p-4 rounded border space-y-4">
+                <h3 class="font-bold text-sm text-slate-700">Agregar Nuevo Publicador (Manual)</h3>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <input type="text" id="nuevoNombre" placeholder="Nombre y Apellido completo" required class="border p-2 rounded text-sm">
+                    <div><label class="block text-xs font-semibold text-slate-600 mb-1">Grupo de Predicación</label><select id="nuevoGrupo" required class="w-full border p-2 rounded text-sm"></select></div>
+                    <div><label class="block text-xs font-semibold text-slate-600 mb-1">Sexo</label><div class="flex gap-4 pt-2 text-sm"><label><input type="radio" name="nuevoSexo" value="Hombre" checked> Hombre</label><label><input type="radio" name="nuevoSexo" value="Mujer"> Mujer</label></div></div>
+                    <div><label class="block text-xs font-semibold text-slate-600 mb-1">Esperanza</label><div class="flex gap-4 pt-2 text-sm"><label><input type="radio" name="nuevaEsperanza" value="Otras ovejas" checked> Otras ovejas</label><label><input type="radio" name="nuevaEsperanza" value="Ungido"> Ungido</label></div></div>
+                    <div><label class="block text-xs font-semibold text-slate-600 mb-1">Fecha de Nacimiento</label><input type="date" id="nuevoNacimiento" class="w-full border p-2 rounded text-sm"></div>
+                    <div><label class="block text-xs font-semibold text-slate-600 mb-1">Fecha de Bautismo</label><input type="date" id="nuevoBautismo" class="w-full border p-2 rounded text-sm"></div>
+                </div>
+                <h3 class="font-bold text-sm text-slate-700 border-t pt-3">Nombramientos y Privilegios S-21-S</h3>
+                <div class="grid md:grid-cols-4 gap-3 text-xs">
+                    <label class="flex items-center gap-1.5"><input type="checkbox" id="chkNomAnciano"> Anciano</label><label class="flex items-center gap-1.5"><input type="checkbox" id="chkNomSiervo"> Siervo ministerial</label><label class="flex items-center gap-1.5"><input type="checkbox" id="chkNomPrecRegular"> Precursor regular</label><label class="flex items-center gap-1.5"><input type="checkbox" id="chkNomPrecEspecial"> Precursor especial</label><label class="flex items-center gap-1.5"><input type="checkbox" id="chkNomMisionero"> Misionero</label>
+                </div>
+                <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium p-2 rounded text-sm w-full md:w-auto px-6">+ Registrar Hermano/a</button>
+            </form>
+            <div class="overflow-x-auto"><table class="w-full text-left text-sm"><thead class="bg-slate-100 uppercase text-xs text-slate-600"><tr><th class="p-3">Nombre</th><th class="p-3">Grupo</th><th class="p-3">Sexo</th><th class="p-3">Esperanza</th><th class="p-3">Privilegios S-21-S</th><th class="p-3 text-center">Acciones</th></tr></thead><tbody id="tablaNomina" class="divide-y"></tbody></table></div>
+        </div>
+
+        <!-- SECCIÓN 11: GRUPOS Y ENCARGADOS -->
+        <div id="secGrupos" class="hidden bg-white p-6 rounded-lg shadow-md space-y-6">
+            <div class="border-b pb-4 flex justify-between items-center flex-wrap gap-4">
+                <div><h2 class="text-xl font-bold text-slate-800">Gestión de Grupos y Designación de Encargados</h2></div>
+                <button onclick="guardarGruposTotalmente()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded shadow text-xs flex items-center gap-1.5">💾 Guardar Designaciones</button>
+            </div>
+            <form onsubmit="agregarGrupo(event)" class="flex gap-4 max-w-md bg-slate-50 p-4 rounded border">
+                <input type="text" id="nombreNuevoGrupo" placeholder="Nombre del Grupo" required class="border p-2 rounded text-sm flex-1"><button type="submit" class="bg-blue-800 hover:bg-blue-900 text-white font-medium px-4 py-2 rounded text-sm">+ Agregar Grupo</button>
+            </form>
+            <div class="overflow-x-auto"><table class="w-full text-left text-sm border"><thead class="bg-slate-100 uppercase text-xs text-slate-600"><tr><th class="p-3 border">Nombre del Grupo</th><th class="p-3 border">Superintendente de Grupo</th><th class="p-3 border">Auxiliar de Grupo</th><th class="p-3 border text-center">Acciones</th></tr></thead><tbody id="tablaGrupos" class="divide-y"></tbody></table></div>
+        </div>
+
+        <!-- SECCIÓN 12: SISTEMA & BACKUP -->
+        <div id="secSistema" class="hidden bg-white p-8 rounded-lg shadow-md space-y-8">
+            <div class="border-b pb-4">
+                <h2 class="text-2xl font-bold text-indigo-900">Gestión del Sistema y Respaldo de Datos</h2>
+                <p class="text-sm text-slate-600">Herramientas para transferir toda la información del sistema a otra computadora o para guardar una copia de seguridad en la nube.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-indigo-50 border border-indigo-200 p-6 rounded-lg text-center shadow-sm flex flex-col items-center justify-center">
+                    <div class="text-4xl mb-3">💾</div>
+                    <h3 class="font-bold text-lg text-indigo-900 mb-2">Crear Copia de Seguridad (Backup Total)</h3>
+                    <button onclick="exportarBackupTotal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded shadow-md transition w-full max-w-xs mt-4">
+                        ⬇️ Descargar Backup (.json)
+                    </button>
+                </div>
+                <div class="bg-amber-50 border border-amber-200 p-6 rounded-lg text-center shadow-sm flex flex-col items-center justify-center">
+                    <div class="text-4xl mb-3">🔄</div>
+                    <h3 class="font-bold text-lg text-amber-900 mb-2">Restaurar Copia de Seguridad</h3>
+                    <label for="fileRestoreBackup" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-6 rounded shadow-md transition cursor-pointer w-full max-w-xs mt-4 inline-block">
+                        ⬆️ Cargar Archivo Backup (.json)
+                    </label>
+                    <input type="file" id="fileRestoreBackup" accept=".json" class="hidden" onchange="importarBackupTotal(event)">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALES -->
+    <div id="modalEditarHermano" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl overflow-hidden">
+            <div class="bg-blue-900 text-white px-6 py-4 flex justify-between items-center"><h3 class="font-bold text-lg">✏️ Editar Datos</h3><button onclick="cerrarModalEditar()" class="text-white font-bold text-xl">&times;</button></div>
+            <form onsubmit="guardarEdicionHermano(event)" class="p-6 space-y-4">
+                <input type="hidden" id="editId">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="col-span-2"><label class="block text-xs font-semibold text-slate-600 mb-1">Nombre</label><input type="text" id="editNombre" required class="w-full border p-2 rounded text-sm font-semibold text-slate-800"></div>
+                    <div><label class="block text-xs font-semibold text-slate-600 mb-1">Grupo</label><select id="editGrupo" required class="w-full border p-2 rounded text-sm"></select></div>
+                    <div><label class="block text-xs font-semibold text-slate-600 mb-1">Sexo</label><select id="editSexo" class="w-full border p-2 rounded text-sm"><option value="Hombre">Hombre</option><option value="Mujer">Mujer</option></select></div>
+                    <div><label class="block text-xs font-semibold text-slate-600 mb-1">Esperanza</label><select id="editEsperanza" class="w-full border p-2 rounded text-sm"><option value="Otras ovejas">Otras ovejas</option><option value="Ungido">Ungido</option></select></div>
+                    <div><label class="block text-xs font-semibold text-slate-600 mb-1">Fecha de Nacimiento</label><input type="date" id="editNacimiento" class="w-full border p-2 rounded text-sm"></div>
+                    <div><label class="block text-xs font-semibold text-slate-600 mb-1">Fecha de Bautismo</label><input type="date" id="editBautismo" class="w-full border p-2 rounded text-sm"></div>
+                </div>
+                <h4 class="font-bold text-xs text-slate-700 uppercase pt-2 border-t">Privilegios</h4>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+                    <label class="flex items-center gap-1.5"><input type="checkbox" id="editAnciano"> Anciano</label><label class="flex items-center gap-1.5"><input type="checkbox" id="editSiervo"> Siervo ministerial</label><label class="flex items-center gap-1.5"><input type="checkbox" id="editPrecRegular"> Precursor regular</label><label class="flex items-center gap-1.5"><input type="checkbox" id="editPrecEspecial"> Precursor especial</label><label class="flex items-center gap-1.5"><input type="checkbox" id="editMisionero"> Misionero</label>
+                </div>
+                <div class="flex justify-end gap-3 border-t pt-4"><button type="button" onclick="cerrarModalEditar()" class="px-4 py-2 border rounded text-xs font-semibold text-slate-600">Cancelar</button><button type="submit" class="px-6 py-2 bg-blue-800 text-white rounded text-xs font-bold">Guardar</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalEditarGrupo" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden">
+            <div class="bg-blue-900 text-white px-6 py-4 flex justify-between items-center"><h3 class="font-bold text-lg">✏️ Editar Nombre del Grupo</h3><button onclick="cerrarModalEditarGrupo()" class="text-white font-bold text-xl">&times;</button></div>
+            <form onsubmit="guardarEdicionGrupo(event)" class="p-6 space-y-4">
+                <input type="hidden" id="editGrupoIdx">
+                <div><label class="block text-xs font-semibold text-slate-600 mb-1">Nombre del Grupo</label><input type="text" id="editGrupoNombre" required class="w-full border p-2 rounded text-sm font-semibold"></div>
+                <div class="flex justify-end gap-3 border-t pt-4"><button type="button" onclick="cerrarModalEditarGrupo()" class="px-4 py-2 border rounded text-xs font-semibold">Cancelar</button><button type="submit" class="px-6 py-2 bg-blue-800 text-white rounded text-xs font-bold">Guardar</button></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycby1zsxDGqgZELOj-27xD7gqo9yijAXUau8h7jZIs2U2ZmC97eK8HfnrAxgpaKM0egva/exec";
+
+        const publicadoresPorGrupo = {
+            "GRUPO 1": ["Ana Colman", "Antonio Santana", "Blanca Fernández", "Damaris Santana", "Damián Baez", "Dionisia Medina", "Idalina Ruiz Díaz", "Idilio Baez", "Irma Baez", "Karina Fernández", "Mabel Domínguez", "Norma Goitia", "Roberto Montenegro", "Rogelia Gaona", "Romina Baez", "Sonia Mayorquin", "Leonela Romero", "Lucas Romero", "Matias Sosa", "Florencia Sosa"],
+            "GRUPO 2": ["Alicia Rodríguez", "César Oscar Román", "Cristina Lugo", "Dante Medina", "Delfina Gaete", "Florinda Cajes", "Gabriela Rodríguez", "Hebe Pintos", "Hugo Vega", "Javier Román", "Julio Campuzano", "Leandro Román", "Lina Sanabria", "Luciano Román", "Miguela Campuzano", "Nora Chamicz", "Norma Cornejo", "Patricia Vega", "Roberto Riquelme", "Roberto Sanabria", "Sandra Sanabria", "Sofia Medina", "Sonia Román", "Raúl Rodriguez", "Verónica Sosa"],
+            "GRUPO 3": ["Albina Pereira", "Avelino Pereira", "Belén Mayorquin", "Camila Mendoza", "Carlos Rolon", "Catalina Fernández", "Cristina Rolón", "David Rivero", "Dora Brizuela", "Egidia Leiva", "Gabriel Mendoza", "Gonzalo Ruiz Díaz", "Griselda Mayorquin", "Mendoza Elsa", "Nadia Ruiz Diaz", "Nora Leiva", "Sol Rodas", "Soledad González", "Valeria Alonso", "Horacio Caballero", "Elida Caballero"],
+            "GRUPO 4": ["Alberto Galarza", "Alfredo Ozuna", "Ariel Quiacof", "Bernardino García", "Bitalina Ortega", "Ceferina Viotti", "Delia Quiacof", "Encima Ada", "Facundo López", "Galarza Raquel", "Griselda González", "Juana Galarza", "Leonor Rigonato", "Liliana Rojas", "Lorena López", "Margarita Ayala", "Nadia Ozuna", "Noelia Galarza", "Ricardo Ayala", "Rosalia Núñez", "Rossi Ozuna", "Silvia Miranda", "Yolanda García"],
+            "GRUPO 5": ["Cecilia Ávalos", "Daniel Galarza", "Daniel Román", "Enrique Flores", "Esteban Parada", "Ester Roman", "Esther González", "Marlen Amarilla", "Misael Baez", "Naomi Baez", "Pablo Román", "Patricia Roman", "Ramona Ávalos", "Rita Vera", "Romina Baez", "Silvio González", "Trigidia Flores", "Yamila Galarza"]
+        };
+
+        let grupos = JSON.parse(localStorage.getItem('grupos_objetos_formosa')) || [
+            { nombre: "GRUPO 1", superId: null, auxId: null },
+            { nombre: "GRUPO 2", superId: null, auxId: null },
+            { nombre: "GRUPO 3", superId: null, auxId: null },
+            { nombre: "GRUPO 4", superId: null, auxId: null },
+            { nombre: "GRUPO 5", superId: null, auxId: null }
+        ];
+
+        let hermanos = JSON.parse(localStorage.getItem('hermanos_oeste_formosa')) || [];
+        if (hermanos.length === 0) {
+            let idCounter = 1;
+            for (const [gNombre, lista] of Object.entries(publicadoresPorGrupo)) {
+                lista.forEach(nombre => {
+                    hermanos.push({
+                        id: idCounter++,
+                        nombre: nombre,
+                        grupo: gNombre,
+                        sexo: "Hombre",
+                        esperanza: "Otras ovejas",
+                        nacimiento: "",
+                        bautismo: "",
+                        anciano: false,
+                        siervo: false,
+                        precRegular: false,
+                        precEspecial: false,
+                        misionero: false,
+                        celular: "",
+                        email: "",
+                        direccionPrincipal: "",
+                        lugarEvacuacion: "",
+                        direccionEvacuacion: "",
+                        contactoRefugio: ""
+                    });
+                });
+            }
+            localStorage.setItem('hermanos_oeste_formosa', JSON.stringify(hermanos));
+        }
+
+        let informes = JSON.parse(localStorage.getItem('informes_s21_oeste_formosa')) || [];
+        let asistenciasS88 = JSON.parse(localStorage.getItem('asistencias_s88_oeste_formosa')) || [];
+        let movimientos = JSON.parse(localStorage.getItem('movimientos_oeste_formosa')) || [];
+        let reportesS10 = JSON.parse(localStorage.getItem('reportes_s10_oeste_formosa')) || {};
+
+        const mesesAñoServicio = ["Septiembre", "Octubre", "Noviembre", "Diciembre", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto"];
+
+        function getAnioServicioActual() {
+            const mesForm = document.getElementById('mesInforme').value;
+            if (mesForm) {
+                const partes = mesForm.split('-');
+                return parseInt(partes[1]) >= 9 ? parseInt(partes[0]) + 1 : parseInt(partes[0]);
+            }
+            const hoy = new Date();
+            return (hoy.getMonth() + 1) >= 9 ? hoy.getFullYear() + 1 : hoy.getFullYear();
+        }
+
+        function actualizarAnoServicioLabel() {
+            const anioActual = getAnioServicioActual();
+            const el = document.getElementById('labelAñoServicio');
+            if(el) el.innerText = `${anioActual - 1} - ${anioActual}`;
+        }
+
+        function cambioMesInforme() {
+            verificarBloqueoHermano();
+            actualizarInterfaz();
+            actualizarAnoServicioLabel();
+            if(!document.getElementById('secSucursal').classList.contains('hidden')) cargarEstadisticasSucursal();
+            if(document.getElementById('selectS21Hermano').value) cargarFichaS21();
+        }
+
+        function inicializarSistemaSecretario() {
+            const hoy = new Date();
+            const mesInput = document.getElementById('mesInforme');
+            if(mesInput && !mesInput.value) {
+                mesInput.value = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}`;
+            }
+            actualizarAnoServicioLabel();
+            actualizarSelectsGrupos();
+            actualizarCombosHermanos();
+            actualizarInterfaz();
+            cargarTablasS88();
+            cargarNomina();
+            cargarTablaGrupos();
+        }
+
+        function cambiarPestana(pestana) {
+            ['secCarga', 'secS21', 'secAsistencia', 'secEstado', 'secPastoreo', 'secSucursal', 'secEmergencia', 'secPrecursores', 'secMovimientos', 'secPublicadores', 'secGrupos', 'secSistema'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.classList.add('hidden');
+            });
+            if (pestana === 'carga') document.getElementById('secCarga').classList.remove('hidden');
+            else if (pestana === 's21') { document.getElementById('secS21').classList.remove('hidden'); cargarFichaS21(); }
+            else if (pestana === 'asistencia') { document.getElementById('secAsistencia').classList.remove('hidden'); cargarTablasS88(); }
+            else if (pestana === 'estado') { document.getElementById('secEstado').classList.remove('hidden'); cargarEstadoInformes(); }
+            else if (pestana === 'pastoreo') { document.getElementById('secPastoreo').classList.remove('hidden'); cargarReportePastoreo(); }
+            else if (pestana === 'sucursal') { document.getElementById('secSucursal').classList.remove('hidden'); cargarEstadisticasSucursal(); inicializarS10(); }
+            else if (pestana === 'emergencia') { document.getElementById('secEmergencia').classList.remove('hidden'); cargarTablaContactosEmergencia(); }
+            else if (pestana === 'precursores') { document.getElementById('secPrecursores').classList.remove('hidden'); cargarPrecursoresRegulares(); }
+            else if (pestana === 'movimientos') { document.getElementById('secMovimientos').classList.remove('hidden'); cargarTablaMovimientos(); }
+            else if (pestana === 'publicadores') { document.getElementById('secPublicadores').classList.remove('hidden'); cargarNomina(); }
+            else if (pestana === 'grupos') { document.getElementById('secGrupos').classList.remove('hidden'); cargarTablaGrupos(); }
+            else if (pestana === 'sistema') { document.getElementById('secSistema').classList.remove('hidden'); }
+        }
+
+        function actualizarCombosHermanos() {
+            const selectCarga = document.getElementById('selectHermano');
+            const selectS21 = document.getElementById('selectS21Hermano');
+            const selectMov = document.getElementById('movHermano');
+            const selectEmg = document.getElementById('emgHermanoId');
+            const opciones = '<option value="">-- Seleccionar --</option>' + hermanos.map(h => `<option value="${h.id}">${h.nombre} (${h.grupo})</option>`).join('');
+            if(selectCarga) selectCarga.innerHTML = opciones;
+            if(selectS21) selectS21.innerHTML = opciones;
+            if(selectMov) selectMov.innerHTML = opciones;
+            if(selectEmg) selectEmg.innerHTML = opciones;
+        }
+
+        function cargarFichaS21() {
+            const hId = document.getElementById('selectS21Hermano').value;
+            if(!hId) return;
+            const h = hermanos.find(x => x.id == hId);
+            if(!h) return;
+
+            document.getElementById('s21Nombre').innerText = h.nombre;
+            document.getElementById('s21NombreAnt').innerText = h.nombre;
+            document.getElementById('s21Nacimiento').innerText = h.nacimiento || "-";
+            document.getElementById('s21NacimientoAnt').innerText = h.nacimiento || "-";
+            document.getElementById('s21Bautismo').innerText = h.bautismo || "-";
+            document.getElementById('s21BautismoAnt').innerText = h.bautismo || "-";
+
+            document.getElementById('chkHombre').innerText = h.sexo === 'Hombre' ? '☒' : '☐';
+            document.getElementById('chkMujer').innerText = h.sexo === 'Mujer' ? '☒' : '☐';
+            document.getElementById('chkHombreAnt').innerText = h.sexo === 'Hombre' ? '☒' : '☐';
+            document.getElementById('chkMujerAnt').innerText = h.sexo === 'Mujer' ? '☒' : '☐';
+
+            document.getElementById('chkOtrasOvejas').innerText = h.esperanza === 'Otras ovejas' ? '☒' : '☐';
+            document.getElementById('chkUngido').innerText = h.esperanza === 'Ungido' ? '☒' : '☐';
+            document.getElementById('chkOtrasOvejasAnt').innerText = h.esperanza === 'Otras ovejas' ? '☒' : '☐';
+            document.getElementById('chkUngidoAnt').innerText = h.esperanza === 'Ungido' ? '☒' : '☐';
+
+            ['Anciano', 'Siervo', 'PrecRegular', 'PrecEspecial', 'Misionero'].forEach(pr => {
+                const val = h[pr.toLowerCase() === 'siervo' ? 'siervo' : pr.toLowerCase() === 'precregular' ? 'precRegular' : pr.toLowerCase() === 'precespecial' ? 'precEspecial' : pr.toLowerCase()] ? '☒' : '☐';
+                const el1 = document.getElementById('chk' + pr);
+                const el2 = document.getElementById('chk' + pr + 'Ant');
+                if(el1) el1.innerText = val;
+                if(el2) el2.innerText = val;
+            });
+
+            const anioActual = getAnioServicioActual();
+            document.getElementById('s21AnioActual').innerText = `${anioActual - 1} - ${anioActual}`;
+            document.getElementById('s21AnioAnterior').innerText = `${anioActual - 2} - ${anioActual - 1}`;
+
+            const mesesActual = [
+                {m: "Septiembre", a: anioActual - 1}, {m: "Octubre", a: anioActual - 1}, {m: "Noviembre", a: anioActual - 1}, {m: "Diciembre", a: anioActual - 1},
+                {m: "Enero", a: anioActual}, {m: "Febrero", a: anioActual}, {m: "Marzo", a: anioActual}, {m: "Abril", a: anioActual},
+                {m: "Mayo", a: anioActual}, {m: "Junio", a: anioActual}, {m: "Julio", a: anioActual}, {m: "Agosto", a: anioActual}
+            ];
+
+            const mesesAnterior = [
+                {m: "Septiembre", a: anioActual - 2}, {m: "Octubre", a: anioActual - 2}, {m: "Noviembre", a: anioActual - 2}, {m: "Diciembre", a: anioActual - 2},
+                {m: "Enero", a: anioActual - 1}, {m: "Febrero", a: anioActual - 1}, {m: "Marzo", a: anioActual - 1}, {m: "Abril", a: anioActual - 1},
+                {m: "Mayo", a: anioActual - 1}, {m: "Junio", a: anioActual - 1}, {m: "Julio", a: anioActual - 1}, {m: "Agosto", a: anioActual - 1}
+            ];
+
+            let htmlAct = '', totHAct = 0;
+            mesesActual.forEach(item => {
+                const mesKey = `${item.a}-${String(mesesAñoServicio.indexOf(item.m) + 1).padStart(2, '0')}`;
+                const inf = informes.find(i => i.hermanoId == hId && (i.mes === item.m || i.mes === mesKey || i.mes.includes(item.m)));
+                const part = inf ? inf.participo : "";
+                const est = inf && inf.estudios ? inf.estudios : "";
+                const aux = inf ? inf.precAux : "";
+                const hrs = inf && inf.horas ? inf.horas : "";
+                const not = inf ? inf.notas || "" : "";
+                if(inf && inf.horas) totHAct += parseInt(inf.horas);
+                htmlAct += `<tr><td class="text-left font-semibold">${item.m}</td><td>${part}</td><td>${est}</td><td>${aux}</td><td>${hrs}</td><td class="text-left">${not}</td></tr>`;
+            });
+            document.getElementById('bodyS21TablaActual').innerHTML = htmlAct;
+            document.getElementById('s21TotHorasActual').innerText = totHAct || "";
+
+            let htmlAnt = '', totHAnt = 0;
+            mesesAnterior.forEach(item => {
+                const mesKey = `${item.a}-${String(mesesAñoServicio.indexOf(item.m) + 1).padStart(2, '0')}`;
+                const inf = informes.find(i => i.hermanoId == hId && (i.mes === item.m || i.mes === mesKey || i.mes.includes(item.m)));
+                const part = inf ? inf.participo : "";
+                const est = inf && inf.estudios ? inf.estudios : "";
+                const aux = inf ? inf.precAux : "";
+                const hrs = inf && inf.horas ? inf.horas : "";
+                const not = inf ? inf.notas || "" : "";
+                if(inf && inf.horas) totHAnt += parseInt(inf.horas);
+                htmlAnt += `<tr><td class="text-left font-semibold">${item.m}</td><td>${part}</td><td>${est}</td><td>${aux}</td><td>${hrs}</td><td class="text-left">${not}</td></tr>`;
+            });
+            document.getElementById('bodyS21TablaAnterior').innerHTML = htmlAnt;
+            document.getElementById('s21TotHorasAnterior').innerText = totHAnt || "";
+        }
+
+        function guardarAsistenciaS88(e) {
+            e.preventDefault();
+            const tipo = document.getElementById('s88Tipo').value;
+            const fecha = document.getElementById('s88Fecha').value;
+            const mes = document.getElementById('s88Mes').value;
+            const asistencia = parseInt(document.getElementById('s88AsistenciaTotal').value) || 0;
+
+            if(!fecha) { alert("Indique la fecha."); return; }
+
+            asistenciasS88.push({ id: Date.now(), tipo, fecha, mes, asistencia });
+            localStorage.setItem('asistencias_s88_oeste_formosa', JSON.stringify(asistenciasS88));
+            cargarTablasS88();
+            document.getElementById('s88AsistenciaTotal').value = '';
+            alert("¡Asistencia registrada correctamente!");
+        }
+
+        function eliminarAsistenciaS88(id) {
+            if(confirm("¿Eliminar registro de asistencia?")) {
+                asistenciasS88 = asistenciasS88.filter(a => a.id !== id);
+                localStorage.setItem('asistencias_s88_oeste_formosa', JSON.stringify(asistenciasS88));
+                cargarTablasS88();
+            }
+        }
+
+        function cargarTablasS88() {
+            const tablaHist = document.getElementById('tablaHistorialFechasS88');
+            if(tablaHist) {
+                tablaHist.innerHTML = '';
+                asistenciasS88.forEach(a => {
+                    tablaHist.innerHTML += `<tr><td class="p-2 border font-medium">${a.fecha}</td><td class="p-2 border">${a.tipo === 'EntreSemana' ? 'Entre semana' : 'Fin de semana'}</td><td class="p-2 border">${a.mes}</td><td class="p-2 border text-center font-bold">${a.asistencia}</td><td class="p-2 border text-center"><button onclick="eliminarAsistenciaS88(${a.id})" class="text-red-600 font-bold">🗑️</button></td></tr>`;
+                });
+            }
+
+            const mesesList = ["Septiembre", "Octubre", "Noviembre", "Diciembre", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto"];
+            let htmlEntre = '', totNumEntre = 0, totAsisEntre = 0;
+            let htmlFin = '', totNumFin = 0, totAsisFin = 0;
+
+            mesesList.forEach(m => {
+                const regEntre = asistenciasS88.filter(a => a.mes === m && a.tipo === 'EntreSemana');
+                const numEntre = regEntre.length;
+                const sumEntre = regEntre.reduce((acc, curr) => acc + curr.asistencia, 0);
+                const promEntre = numEntre > 0 ? Math.round(sumEntre / numEntre) : 0;
+                totNumEntre += numEntre; totAsisEntre += sumEntre;
+                htmlEntre += `<tr><td class="p-2 border">${m}</td><td class="p-2 border text-center">${numEntre || '-'}</td><td class="p-2 border text-center">${sumEntre || '-'}</td><td class="p-2 border text-center font-bold">${promEntre || '-'}</td></tr>`;
+
+                const regFin = asistenciasS88.filter(a => a.mes === m && a.tipo === 'FinSemana');
+                const numFin = regFin.length;
+                const sumFin = regFin.reduce((acc, curr) => acc + curr.asistencia, 0);
+                const promFin = numFin > 0 ? Math.round(sumFin / numFin) : 0;
+                totNumFin += numFin; totAsisFin += sumFin;
+                htmlFin += `<tr><td class="p-2 border">${m}</td><td class="p-2 border text-center">${numFin || '-'}</td><td class="p-2 border text-center">${sumFin || '-'}</td><td class="p-2 border text-center font-bold">${promFin || '-'}</td></tr>`;
+            });
+
+            const tEntre = document.getElementById('tablaS88EntreSemana');
+            const tFin = document.getElementById('tablaS88FinSemana');
+            if(tEntre) tEntre.innerHTML = htmlEntre;
+            if(tFin) tFin.innerHTML = htmlFin;
+
+            const pNumE = document.getElementById('promNumEntre');
+            const tAsE = document.getElementById('totAsisEntre');
+            const pSeE = document.getElementById('promSemEntre');
+            if(pNumE) pNumE.innerText = totNumEntre;
+            if(tAsE) tAsE.innerText = totAsisEntre;
+            if(pSeE) pSeE.innerText = totNumEntre > 0 ? (totAsisEntre / totNumEntre).toFixed(1) : '-';
+
+            const pNumF = document.getElementById('promNumFin');
+            const tAsF = document.getElementById('totAsisFin');
+            const pSeF = document.getElementById('promSemFin');
+            if(pNumF) pNumF.innerText = totNumFin;
+            if(tAsF) tAsF.innerText = totAsisFin;
+            if(pSeF) pSeF.innerText = totNumFin > 0 ? (totAsisFin / totNumFin).toFixed(1) : '-';
+        }
+
+        function cargarEstadoInformes() {
+            const m = document.getElementById('mesInforme').value || `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`;
+            const listaInf = document.getElementById('listaInformaron');
+            const listaPen = document.getElementById('listaPendientes');
+            if(!listaInf || !listaPen) return;
+
+            listaInf.innerHTML = ''; listaPen.innerHTML = '';
+            let cInf = 0, cPen = 0;
+
+            hermanos.forEach(h => {
+                const inf = informes.find(i => i.hermanoId == h.id && i.mes === m);
+                if(inf && inf.participo === 'Sí') {
+                    cInf++;
+                    listaInf.innerHTML += `<li class="py-2 flex justify-between items-center"><span class="font-medium">${h.nombre}</span><span class="text-xs text-blue-800 bg-blue-50 px-2 py-0.5 rounded font-semibold">${h.grupo}</span></li>`;
+                } else {
+                    cPen++;
+                    listaPen.innerHTML += `<li class="py-2 flex justify-between items-center"><span class="font-medium">${h.nombre}</span><span class="text-xs text-red-800 bg-red-50 px-2 py-0.5 rounded font-semibold">${h.grupo}</span></li>`;
+                }
+            });
+            document.getElementById('cantInformaron').innerText = cInf;
+            document.getElementById('cantPendientes').innerText = cPen;
+        }
+
+        function cargarReportePastoreo() {
+            const lstIrr = document.getElementById('listaIrregulares');
+            const lstIna = document.getElementById('listaInactivos');
+            if(!lstIrr || !lstIna) return;
+
+            lstIrr.innerHTML = ''; lstIna.innerHTML = '';
+            let cntIrr = 0, cntIna = 0;
+
+            const hoy = new Date();
+            const mesActualIdx = hoy.getMonth() + 1;
+            const anioActual = hoy.getFullYear();
+
+            hermanos.forEach(h => {
+                let mesesSinInformar = 0;
+                for(let i=1; i<=3; i++) {
+                    let mTarget = mesActualIdx - i;
+                    let aTarget = anioActual;
+                    if(mTarget <= 0) { mTarget += 12; aTarget -= 1; }
+                    const mNombre = mesesAñoServicio[(mTarget - 1 + 12) % 12];
+                    const inf = informes.find(x => x.hermanoId == h.id && (x.mes === mNombre || x.mes.includes(`${aTarget}-${String(mTarget).padStart(2,'0')}`)));
+                    if(!inf || inf.participo !== 'Sí') {
+                        mesesSinInformar++;
+                    }
+                }
+
+                if(mesesSinInformar === 3) {
+                    cntIrr++;
+                    lstIrr.innerHTML += `<li class="py-2 flex justify-between items-center"><span class="font-medium">${h.nombre}</span><span class="text-xs bg-amber-100 text-amber-900 px-2 py-0.5 rounded font-bold">${h.grupo}</span></li>`;
+                } else if(mesesSinInformar > 3) {
+                    cntIna++;
+                    lstIna.innerHTML += `<li class="py-2 flex justify-between items-center"><span class="font-medium">${h.nombre}</span><span class="text-xs bg-red-100 text-red-900 px-2 py-0.5 rounded font-bold">${h.grupo}</span></li>`;
+                }
+            });
+
+            document.getElementById('cntIrregulares').innerText = cntIrr;
+            document.getElementById('cntInactivos').innerText = cntIna;
+        }
+
+        function guardarContactoEmergencia(e) {
+            e.preventDefault();
+            const hId = document.getElementById('emgHermanoId').value;
+            const h = hermanos.find(x => x.id == hId);
+            if(!h) return;
+
+            h.celular = document.getElementById('emgCelular').value;
+            h.email = document.getElementById('emgEmail').value;
+            h.direccionPrincipal = document.getElementById('emgDireccionPrincipal').value;
+            h.lugarEvacuacion = document.getElementById('emgLugarEvacuacion').value;
+            h.direccionEvacuacion = document.getElementById('emgDireccionEvacuacion').value;
+            h.contactoRefugio = document.getElementById('emgContactoRefugio').value;
+
+            localStorage.setItem('hermanos_oeste_formosa', JSON.stringify(hermanos));
+            cargarTablaContactosEmergencia();
+            alert("¡Datos de emergencia guardados correctamente!");
+        }
+
+        function cargarDatosEmergenciaHermano() {
+            const hId = document.getElementById('emgHermanoId').value;
+            const h = hermanos.find(x => x.id == hId);
+            if(!h) return;
+            document.getElementById('emgCelular').value = h.celular || "";
+            document.getElementById('emgEmail').value = h.email || "";
+            document.getElementById('emgDireccionPrincipal').value = h.direccionPrincipal || "";
+            document.getElementById('emgLugarEvacuacion').value = h.lugarEvacuacion || "";
+            document.getElementById('emgDireccionEvacuacion').value = h.direccionEvacuacion || "";
+            document.getElementById('emgContactoRefugio').value = h.contactoRefugio || "";
+        }
+
+        function cargarTablaContactosEmergencia() {
+            const tabla = document.getElementById('tablaContactosEmergencia');
+            if(!tabla) return;
+            tabla.innerHTML = '';
+            hermanos.forEach(h => {
+                if(h.celular || h.lugarEvacuacion) {
+                    tabla.innerHTML += `<tr><td class="p-3 border font-medium">${h.nombre}</td><td class="p-3 border">${h.grupo}</td><td class="p-3 border">${h.celular || '-'}</td><td class="p-3 border">${h.direccionPrincipal || '-'}</td><td class="p-3 border">${h.lugarEvacuacion || '-'}</td><td class="p-3 border">${h.direccionEvacuacion || '-'}</td><td class="p-3 border">${h.contactoRefugio || '-'}</td></tr>`;
+                }
+            });
+        }
+
+        function cargarPrecursoresRegulares() {
+            const tabla = document.getElementById('tablaPrecursoresRegulares');
+            if(!tabla) return;
+            tabla.innerHTML = '';
+            hermanos.filter(h => h.precRegular).forEach(h => {
+                let horasTotal = 0, cursosTotal = 0, mesesInformados = 0;
+                informes.filter(i => i.hermanoId == h.id).forEach(inf => {
+                    horasTotal += parseInt(inf.horas) || 0;
+                    cursosTotal += parseInt(inf.estudios) || 0;
+                    if(inf.horas > 0 || inf.participo === 'Sí') mesesInformados++;
+                });
+                const porc = Math.round((horasTotal / 600) * 100);
+                const prom = mesesInformados > 0 ? (horasTotal / mesesInformados).toFixed(1) : 0;
+                tabla.innerHTML += `<tr><td class="p-3 font-medium">${h.nombre}</td><td class="p-3">${h.grupo}</td><td class="p-3 text-center font-bold text-blue-900">${horasTotal} hrs</td><td class="p-3 text-center">600 hrs</td><td class="p-3 text-center font-bold text-emerald-700">${porc}%</td><td class="p-3 text-center">${prom} hrs/mes</td><td class="p-3 text-center">${cursosTotal}</td></tr>`;
+            });
+        }
+
+        function registrarMovimiento(e) {
+            e.preventDefault();
+            const hId = document.getElementById('movHermano').value;
+            const tipo = document.getElementById('movTipo').value;
+            const fecha = document.getElementById('movFecha').value;
+            movimientos.push({ id: Date.now(), hermanoId: hId, tipo, fecha });
+            localStorage.setItem('movimientos_oeste_formosa', JSON.stringify(movimientos));
+            cargarTablaMovimientos();
+            alert("¡Movimiento registrado con éxito!");
+        }
+
+        function eliminarMovimiento(id) {
+            if(confirm("¿Eliminar movimiento?")) {
+                movimientos = movimientos.filter(m => m.id !== id);
+                localStorage.setItem('movimientos_oeste_formosa', JSON.stringify(movimientos));
+                cargarTablaMovimientos();
+            }
+        }
+
+        function cargarTablaMovimientos() {
+            const tabla = document.getElementById('tablaMovimientosHistorial');
+            if(!tabla) return;
+            tabla.innerHTML = '';
+            movimientos.forEach(m => {
+                const h = hermanos.find(x => x.id == m.hermanoId) || { nombre: "Desconocido" };
+                tabla.innerHTML += `<tr><td class="p-3 border font-medium">${h.nombre}</td><td class="p-3 border font-semibold text-amber-800">${m.tipo}</td><td class="p-3 border">${m.fecha}</td><td class="p-3 border text-center"><button onclick="eliminarMovimiento(${m.id})" class="text-red-600 font-bold">🗑️</button></td></tr>`;
+            });
+        }
+
+        function cargarNomina() {
+            const tabla = document.getElementById('tablaNomina');
+            const filtro = document.getElementById('filtroGrupoNomina');
+            if(!tabla) return;
+            tabla.innerHTML = '';
+            const grupoSeleccionado = filtro ? filtro.value : 'TODOS';
+
+            hermanos.forEach(h => {
+                if(grupoSeleccionado === 'TODOS' || h.grupo === grupoSeleccionado) {
+                    let nomb = [];
+                    if (h.anciano) nomb.push("Anciano");
+                    if (h.siervo) nomb.push("Siervo");
+                    if (h.precRegular) nomb.push("Prec. Regular");
+                    if (h.precEspecial) nomb.push("Prec. Especial");
+                    if (h.misionero) nomb.push("Misionero");
+                    tabla.innerHTML += `<tr><td class="p-3 font-medium">${h.nombre}</td><td class="p-3 font-semibold text-blue-900">${h.grupo}</td><td class="p-3">${h.sexo}</td><td class="p-3">${h.esperanza}</td><td class="p-3"><span class="px-2 py-1 text-xs rounded bg-slate-100">${nomb.join(", ") || "Publicador"}</span></td><td class="p-3 text-center flex justify-center gap-2"><button onclick="abrirModalEditar(${h.id})" class="bg-amber-500 text-white px-2 py-1 rounded text-xs">✏️</button><button onclick="eliminarHermano(${h.id})" class="bg-red-600 text-white px-2 py-1 rounded text-xs">🗑️</button></td></tr>`;
+                }
+            });
+        }
+
+        function agregarHermano(e) {
+            e.preventDefault();
+            const nuevoH = {
+                id: Date.now(),
+                nombre: document.getElementById('nuevoNombre').value.trim(),
+                grupo: document.getElementById('nuevoGrupo').value,
+                sexo: document.querySelector('input[name="nuevoSexo"]:checked').value,
+                esperanza: document.querySelector('input[name="nuevaEsperanza"]:checked').value,
+                nacimiento: document.getElementById('nuevoNacimiento').value,
+                bautismo: document.getElementById('nuevoBautismo').value,
+                anciano: document.getElementById('chkNomAnciano').checked,
+                siervo: document.getElementById('chkNomSiervo').checked,
+                precRegular: document.getElementById('chkNomPrecRegular').checked,
+                precEspecial: document.getElementById('chkNomPrecEspecial').checked,
+                misionero: document.getElementById('chkNomMisionero').checked,
+                celular: "", email: "", direccionPrincipal: "", lugarEvacuacion: "", direccionEvacuacion: "", contactoRefugio: ""
+            };
+            hermanos.push(nuevoH);
+            localStorage.setItem('hermanos_oeste_formosa', JSON.stringify(hermanos));
+            cargarNomina();
+            actualizarCombosHermanos();
+            e.target.reset();
+            alert("¡Hermano/a registrado con éxito!");
+        }
+
+        function eliminarHermano(id) {
+            if(confirm("¿Eliminar publicador?")) {
+                hermanos = hermanos.filter(h => h.id !== id);
+                localStorage.setItem('hermanos_oeste_formosa', JSON.stringify(hermanos));
+                cargarNomina();
+                actualizarCombosHermanos();
+            }
+        }
+
+        function abrirModalEditar(id) {
+            const h = hermanos.find(x => x.id === id);
+            if(!h) return;
+            document.getElementById('editId').value = h.id;
+            document.getElementById('editNombre').value = h.nombre;
+            document.getElementById('editSexo').value = h.sexo;
+            document.getElementById('editEsperanza').value = h.esperanza;
+            document.getElementById('editNacimiento').value = h.nacimiento || "";
+            document.getElementById('editBautismo').value = h.bautismo || "";
+            document.getElementById('editAnciano').checked = h.anciano;
+            document.getElementById('editSiervo').checked = h.siervo;
+            document.getElementById('editPrecRegular').checked = h.precRegular;
+            document.getElementById('editPrecEspecial').checked = h.precEspecial;
+            document.getElementById('editMisionero').checked = h.misionero;
+
+            const selG = document.getElementById('editGrupo');
+            selG.innerHTML = grupos.map(g => `<option value="${g.nombre}" ${g.nombre === h.grupo ? 'selected' : ''}>${g.nombre}</option>`).join('');
+
+            document.getElementById('modalEditarHermano').classList.remove('hidden');
+        }
+
+        function cerrarModalEditar() {
+            document.getElementById('modalEditarHermano').classList.add('hidden');
+        }
+
+        function guardarEdicionHermano(e) {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('editId').value);
+            const h = hermanos.find(x => x.id === id);
+            if(!h) return;
+            h.nombre = document.getElementById('editNombre').value.trim();
+            h.grupo = document.getElementById('editGrupo').value;
+            h.sexo = document.getElementById('editSexo').value;
+            h.esperanza = document.getElementById('editEsperanza').value;
+            h.nacimiento = document.getElementById('editNacimiento').value;
+            h.bautismo = document.getElementById('editBautismo').value;
+            h.anciano = document.getElementById('editAnciano').checked;
+            h.siervo = document.getElementById('editSiervo').checked;
+            h.precRegular = document.getElementById('editPrecRegular').checked;
+            h.precEspecial = document.getElementById('editPrecEspecial').checked;
+            h.misionero = document.getElementById('editMisionero').checked;
+
+            localStorage.setItem('hermanos_oeste_formosa', JSON.stringify(hermanos));
+            cerrarModalEditar();
+            cargarNomina();
+            actualizarCombosHermanos();
+            alert("¡Datos actualizados!");
+        }
+
+        function cargarTablaGrupos() {
+            const tabla = document.getElementById('tablaGrupos');
+            if(!tabla) return;
+            tabla.innerHTML = '';
+            grupos.forEach((g, idx) => {
+                const nombreG = typeof g === 'object' ? g.nombre : g;
+                const superId = typeof g === 'object' ? g.superId : null;
+                const auxId = typeof g === 'object' ? g.auxId : null;
+
+                tabla.innerHTML += `<tr>
+                    <td class="p-3 border font-bold text-blue-900">${nombreG}</td>
+                    <td class="p-3 border"><select id="super_${idx}" class="w-full border p-1.5 rounded text-xs bg-white"><option value="">-- Sin asignar --</option>${hermanos.map(h => `<option value="${h.id}" ${h.id == superId ? 'selected' : ''}>${h.nombre}</option>`).join('')}</select></td>
+                    <td class="p-3 border"><select id="aux_${idx}" class="w-full border p-1.5 rounded text-xs bg-white"><option value="">-- Sin asignar --</option>${hermanos.map(h => `<option value="${h.id}" ${h.id == auxId ? 'selected' : ''}>${h.nombre}</option>`).join('')}</select></td>
+                    <td class="p-3 border text-center"><button onclick="eliminarGrupo(${idx})" class="text-red-600 font-bold">🗑️</button></td>
+                </tr>`;
+            });
+        }
+
+        function agregarGrupo(e) {
+            e.preventDefault();
+            const nom = document.getElementById('nombreNuevoGrupo').value.trim();
+            if(!nom) return;
+            if(!grupos.some(g => (typeof g === 'object' ? g.nombre : g) === nom)) {
+                grupos.push({ nombre: nom, superId: null, auxId: null });
+                localStorage.setItem('grupos_objetos_formosa', JSON.stringify(grupos));
+                cargarTablaGrupos();
+                actualizarSelectsGrupos();
+                e.target.reset();
+                alert("¡Grupo agregado!");
+            } else {
+                alert("El grupo ya existe.");
+            }
+        }
+
+        function guardarGruposTotalmente() {
+            grupos.forEach((g, idx) => {
+                const sVal = document.getElementById(`super_${idx}`).value;
+                const aVal = document.getElementById(`aux_${idx}`).value;
+                if(typeof g === 'object') {
+                    g.superId = sVal ? parseInt(sVal) : null;
+                    g.auxId = aVal ? parseInt(aVal) : null;
+                } else {
+                    grupos[idx] = { nombre: g, superId: sVal ? parseInt(sVal) : null, auxId: aVal ? parseInt(aVal) : null };
+                }
+            });
+            localStorage.setItem('grupos_objetos_formosa', JSON.stringify(grupos));
+            alert("¡Designaciones de grupos guardadas con éxito!");
+        }
+
+        function eliminarGrupo(idx) {
+            if(confirm("¿Eliminar grupo?")) {
+                grupos.splice(idx, 1);
+                localStorage.setItem('grupos_objetos_formosa', JSON.stringify(grupos));
+                cargarTablaGrupos();
+                actualizarSelectsGrupos();
+            }
+        }
+
+        function actualizarSelectsGrupos() {
+            const sN = document.getElementById('nuevoGrupo'), sD = document.getElementById('selectGrupoDescarga'), waG = document.getElementById('waGrupoSelect');
+            if(sN) sN.innerHTML = ''; if(sD) sD.innerHTML = ''; if(waG) waG.innerHTML = '';
+            grupos.forEach(g => {
+                const nom = typeof g === 'object' ? g.nombre : g;
+                if(sN) sN.innerHTML += `<option value="${nom}">${nom}</option>`;
+                if(sD) sD.innerHTML += `<option value="${nom}">${nom}</option>`;
+                if(waG) waG.innerHTML += `<option value="${nom}">${nom}</option>`;
+            });
+        }
+
+        function cargarEstadisticasSucursal() {
+            const tbody = document.getElementById('tablaSucursalEstadisticas');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            mesesAñoServicio.forEach(m => {
+                let cPub = 0, cAux = 0, cReg = 0, ePub = 0, eAux = 0, eReg = 0, hAux = 0, hReg = 0;
+                informes.filter(i => i.mes === m || i.mes.includes(m)).forEach(inf => {
+                    const h = hermanos.find(x => x.id == inf.hermanoId);
+                    if(!h) return;
+                    if(inf.participo === 'Sí') {
+                        if(h.precRegular) { cReg++; eReg += (inf.estudios || 0); hReg += (inf.horas || 0); }
+                        else if(inf.precAux === 'Sí') { cAux++; eAux += (inf.estudios || 0); hAux += (inf.horas || 0); }
+                        else { cPub++; ePub += (inf.estudios || 0); }
+                    }
+                });
+                const totH = hAux + hReg;
+                const totC = ePub + eAux + eReg;
+                tbody.innerHTML += `<tr><td class="p-2 border font-bold">${m}</td><td class="p-2 border text-center">${cPub || '-'}</td><td class="p-2 border text-center">${cAux || '-'}</td><td class="p-2 border text-center">${cReg || '-'}</td><td class="p-2 border text-center">${ePub || '-'}</td><td class="p-2 border text-center">${eAux || '-'}</td><td class="p-2 border text-center">${eReg || '-'}</td><td class="p-2 border text-center">${hAux || '-'}</td><td class="p-2 border text-center">${hReg || '-'}</td><td class="p-2 border text-center font-bold">${totH || '-'}</td><td class="p-2 border text-center font-bold">${totC || '-'}</td></tr>`;
+            });
+        }
+
+        function inicializarS10() {
+            const selAnio = document.getElementById('s10SelectAnio');
+            if(selAnio) {
+                const anioA = getAnioServicioActual();
+                selAnio.innerHTML = `<option value="${anioA}">${anioA - 1} - ${anioA}</option><option value="${anioA - 1}">${anioA - 2} - ${anioA - 1}</option>`;
+            }
+            cargarDatosS10();
+        }
+
+        function cargarDatosS10() {
+            const anio = document.getElementById('s10SelectAnio').value;
+            const dat = reportesS10[anio] || {};
+            document.getElementById('s10Activos').value = dat.activos || hermanos.length;
+            document.getElementById('s10InactivosNuevos').value = dat.inactivosNuevos || 0;
+            document.getElementById('s10Reactivados').value = dat.reactivados || 0;
+            document.getElementById('s10Sordos').value = dat.sordos || 0;
+            document.getElementById('s10Ciegos').value = dat.ciegos || 0;
+            document.getElementById('s10Encarcelados').value = dat.encarcelados || 0;
+            document.getElementById('s10TerritoriosTotal').value = dat.territoriosTotal || 0;
+            document.getElementById('s10TerritoriosNoPred').value = dat.territoriosNoPred || 0;
+
+            const totalE = asistenciasS88.reduce((a, b) => a + (b.tipo === 'EntreSemana' ? b.asistencia : 0), 0);
+            const countE = asistenciasS88.filter(b => b.tipo === 'EntreSemana').length;
+            document.getElementById('s10AsistenciaEntre').value = countE > 0 ? Math.round(totalE / countE) : 0;
+
+            const totalF = asistenciasS88.reduce((a, b) => a + (b.tipo === 'FinSemana' ? b.asistencia : 0), 0);
+            const countF = asistenciasS88.filter(b => b.tipo === 'FinSemana').length;
+            document.getElementById('s10AsistenciaFin').value = countF > 0 ? Math.round(totalF / countF) : 0;
+        }
+
+        function autocalcularS10() {
+            document.getElementById('s10Activos').value = hermanos.length;
+            alert("¡Totales actualizados automáticamente desde la nómina!");
+        }
+
+        function guardarS10Manual() {
+            const anio = document.getElementById('s10SelectAnio').value;
+            reportesS10[anio] = {
+                activos: parseInt(document.getElementById('s10Activos').value) || 0,
+                inactivosNuevos: parseInt(document.getElementById('s10InactivosNuevos').value) || 0,
+                reactivados: parseInt(document.getElementById('s10Reactivados').value) || 0,
+                sordos: parseInt(document.getElementById('s10Sordos').value) || 0,
+                ciegos: parseInt(document.getElementById('s10Ciegos').value) || 0,
+                encarcelados: parseInt(document.getElementById('s10Encarcelados').value) || 0,
+                territoriosTotal: parseInt(document.getElementById('s10TerritoriosTotal').value) || 0,
+                territoriosNoPred: parseInt(document.getElementById('s10TerritoriosNoPred').value) || 0
+            };
+            localStorage.setItem('reportes_s10_oeste_formosa', JSON.stringify(reportesS10));
+            alert("¡Análisis S-10 guardado correctamente!");
+        }
+
+        function actualizarNombresPub() {
+            const grupo = document.getElementById("selectGrupoPub").value;
+            const selectNombre = document.getElementById("selectNombrePub");
+            selectNombre.innerHTML = '<option value="">Seleccione...</option>';
+            if (grupo && publicadoresPorGrupo[grupo]) {
+                publicadoresPorGrupo[grupo].sort().forEach(n => {
+                    const opt = document.createElement("option");
+                    opt.value = n; opt.textContent = n;
+                    selectNombre.appendChild(opt);
+                });
+            }
+        }
+
+        function enviarInformePublico(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnEnviarPub');
+            const msg = document.getElementById('mensajeExitoPub');
+            btn.disabled = true;
+            btn.innerText = "Enviando informe...";
+
+            const nombreHermano = document.getElementById('selectNombrePub').value;
+            const hObj = hermanos.find(x => x.nombre.toLowerCase() === nombreHermano.toLowerCase());
+
+            if(hObj) {
+                const mesVal = document.getElementById('pubMes').value;
+                const partVal = document.getElementById('participoPub').checked ? "Sí" : "No";
+                const cursVal = parseInt(document.getElementById('pubCursos').value) || 0;
+                const horaVal = parseInt(document.getElementById('pubHoras').value) || 0;
+                const notaVal = document.getElementById('pubNotas').value || "";
+
+                const di = { hermanoId: hObj.id, mes: mesVal, participo: partVal, estudios: cursVal, precAux: horaVal > 0 ? "Sí" : "No", horas: horaVal, notas: notaVal };
+                const ix = informes.findIndex(i => i.hermanoId === hObj.id && i.mes === mesVal);
+                if(ix >= 0) informes[ix] = di; else informes.push(di);
+                localStorage.setItem('informes_s21_oeste_formosa', JSON.stringify(informes));
+            }
+
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerText = "Enviar informe";
+                msg.classList.remove('hidden');
+                document.getElementById('formPublicoEnvio').reset();
+                setTimeout(() => msg.classList.add('hidden'), 6000);
+            }, 800);
+        }
+
+        function solicitarAccesoSecretaria() {
+            const pin = prompt("Ingrese la contraseña de Super Usuario (Secretaría):");
+            if (pin === "1234") {
+                localStorage.setItem("sesion_secretaria_activa", "true");
+                mostrarVistaSecretaria();
+            } else if (pin !== null) {
+                alert("Contraseña incorrecta.");
+            }
+        }
+
+        function cerrarSesionSecretaria() {
+            localStorage.removeItem("sesion_secretaria_activa");
+            document.getElementById('vistaSecretaria').classList.add('hidden');
+            document.getElementById('vistaFormulario').classList.remove('hidden');
+        }
+
+        function mostrarVistaSecretaria() {
+            document.getElementById('vistaFormulario').classList.add('hidden');
+            document.getElementById('vistaSecretaria').classList.remove('hidden');
+            inicializarSistemaSecretario();
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            if (localStorage.getItem("sesion_secretaria_activa") === "true") {
+                mostrarVistaSecretaria();
+            }
+        });
+    </script>
+</body>
+</html>
